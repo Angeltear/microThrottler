@@ -11,9 +11,13 @@ import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import io.lettuce.core.codec.ByteArrayCodec;
 import jakarta.annotation.PostConstruct;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -21,6 +25,8 @@ import java.util.Date;
 
 @Component
 @Slf4j
+
+@NoArgsConstructor
 public class MicroThrottlerClient {
 
     @Autowired
@@ -33,12 +39,10 @@ public class MicroThrottlerClient {
     private long rateLimit;
 
 
-    /* Using @PostConstruct to tell Spring we need the method executed once the context and properties have been initialized.
-     *  If the method is called from the main method of the application, it will fail, because context loads later and Spring
-     *  can not inject the RedisConfig instance. In any case, PostConstruct works great, because we need to call this method once
-     *  the service is up and in case of a timeout, the method will be recursively invoked.
+    /* Using @EventListener(ApplicationReadyEvent.class) to tell Spring we need the method executed once the application has started.
+     * In case of a timeout, the method will be recursively invoked.
      */
-    @PostConstruct
+    @EventListener(ApplicationReadyEvent.class)
     public void initiateConsumer() {
 
         //Create amount of tokens, generated every second, based on a configuration parameter.
@@ -111,6 +115,7 @@ public class MicroThrottlerClient {
         rateLimiter.acquire();
         log.info("Processing paymentRequest: " + paymentRequest.toString() + " at: " + new Date());
     }
+
 
 
 }
