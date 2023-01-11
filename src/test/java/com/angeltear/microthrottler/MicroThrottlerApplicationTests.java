@@ -1,6 +1,5 @@
 package com.angeltear.microthrottler;
 
-import com.angeltear.microthrottler.client.MicroThrottlerClient;
 import com.angeltear.microthrottler.model.PaymentRequest;
 import com.angeltear.microthrottler.service.PaymentDataService;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -26,7 +24,7 @@ class MicroThrottlerApplicationTests {
 
     //Before running this test, comment out line 47 in MicroThrottlerClient
     @Test
-    void testTransactionLock(){
+    void testTransactionLock() {
 
         /* This test only fails when there are no rows for the customer in AccountBalance table. Hibernate first performs the check and then the lock/wait is
          * performed on the findById method. When there already is data for a particular customer (only 1 row is expected, since client_Id is primary key),
@@ -42,7 +40,7 @@ class MicroThrottlerApplicationTests {
 
         ExecutorService executorService = Executors.newFixedThreadPool(2);
 
-        Future<PaymentRequest> future = executorService.submit(() -> paymentDataService.savePayment(new PaymentRequest(1,2,1)));
+        Future<PaymentRequest> future = executorService.submit(() -> paymentDataService.savePayment(new PaymentRequest(1, 2, 1)));
 
         /* This block can be uncommented to compensate the problem, explained above. Local tests show that 300ms are enough time for the first transaction to complete and the 2nd is processed normally (with update).
 
@@ -54,13 +52,12 @@ class MicroThrottlerApplicationTests {
         }
         */
 
-        Future<PaymentRequest> future2 = executorService.submit(() -> paymentDataService.savePayment(new PaymentRequest(1,1,1)));
+        Future<PaymentRequest> future2 = executorService.submit(() -> paymentDataService.savePayment(new PaymentRequest(1, 1, 1)));
 
-        try{
+        try {
             future.get();
             future2.get();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             log.error("ERROR: " + e.getMessage());
         }
 

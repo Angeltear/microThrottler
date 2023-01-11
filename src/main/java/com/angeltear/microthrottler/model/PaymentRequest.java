@@ -1,6 +1,9 @@
 package com.angeltear.microthrottler.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
@@ -11,7 +14,7 @@ import lombok.*;
 @ToString
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Table(name="payments")
+@Table(name = "payments")
 @Entity
 public class PaymentRequest {
     @NotNull(message = "ClientID is mandatory!")

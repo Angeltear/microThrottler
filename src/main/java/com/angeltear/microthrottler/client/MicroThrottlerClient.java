@@ -43,7 +43,6 @@ public class MicroThrottlerClient {
     /* Using @EventListener(ApplicationReadyEvent.class) to tell Spring we need the method executed once the application has started.
      * In case of a timeout, the method will be recursively invoked.
      */
-
     @EventListener(ApplicationReadyEvent.class) //Comment this line to run testTransactionLock() test
     public void initiateConsumer() {
 
@@ -78,7 +77,7 @@ public class MicroThrottlerClient {
                 /* Pass the element to the processor, along with the rateLimiter instance. We can also call the .acquire() method here to block and wait for
                  * available token before the call to processElement, but passing the limiter instance to get a token inside the method makes this usage easier
                  * to expand the functionality by passing the processElement to another thread for async processing.
-                */
+                 */
                 processElement(rateLimiter, pr);
 
             }
@@ -103,7 +102,6 @@ public class MicroThrottlerClient {
     }
 
 
-
     /* In order to throttle the load on the database for a consistent performance, there are 2 algorithms that suit the purpose - Leaky Bucket and Token Bucket.
      * - Leaky bucket relies on the concept that inbound rate elements is not limited and processed with a fixed frequency. If the volume of inbound elements is too large,
      * subsequent requests are discarded (bucket is full). Such algorithm is implemented in the initiator Microservice in order to prevent abuse, DDoS, etc.
@@ -115,12 +113,11 @@ public class MicroThrottlerClient {
      * For implementing the throttling approach, we're using Google's "Guava" open-source library. It generates tokens at a fixed rate (with or without warm-up period), has both
      * blocking (acquire) and non-blocking (tryAcquire) functionality. Its usage is also straight-forward.
      */
-    public void processElement(RateLimiter rateLimiter, PaymentRequest paymentRequest){
+    public void processElement(RateLimiter rateLimiter, PaymentRequest paymentRequest) {
         rateLimiter.acquire();
         log.info("Processing paymentRequest: " + paymentRequest.toString() + " at: " + new Date());
-        PaymentRequest paymentSaved =  paymentDataService.savePayment(paymentRequest);
+        paymentDataService.savePayment(paymentRequest);
     }
-
 
 
 }
