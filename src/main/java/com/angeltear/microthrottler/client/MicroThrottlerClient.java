@@ -1,8 +1,9 @@
 package com.angeltear.microthrottler.client;
 
-import com.angeltear.microthrottler.Config.RedisConfig;
-import com.angeltear.microthrottler.Model.PaymentRequest;
-import com.angeltear.microthrottler.Serializer.PaymentRequestSerializer;
+import com.angeltear.microthrottler.config.RedisConfig;
+import com.angeltear.microthrottler.model.PaymentRequest;
+import com.angeltear.microthrottler.serializer.PaymentRequestSerializer;
+import com.angeltear.microthrottler.service.PaymentDataService;
 import com.google.common.util.concurrent.RateLimiter;
 import io.lettuce.core.KeyValue;
 import io.lettuce.core.RedisClient;
@@ -10,8 +11,6 @@ import io.lettuce.core.RedisCommandTimeoutException;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import io.lettuce.core.codec.ByteArrayCodec;
-import jakarta.annotation.PostConstruct;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,6 @@ import java.util.Date;
 
 @Component
 @Slf4j
-
 @NoArgsConstructor
 public class MicroThrottlerClient {
 
@@ -38,11 +36,15 @@ public class MicroThrottlerClient {
     @Value("${rate-limit-per-second}")
     private long rateLimit;
 
+    @Autowired
+    private PaymentDataService paymentDataService;
+
 
     /* Using @EventListener(ApplicationReadyEvent.class) to tell Spring we need the method executed once the application has started.
      * In case of a timeout, the method will be recursively invoked.
      */
-    @EventListener(ApplicationReadyEvent.class)
+
+    @EventListener(ApplicationReadyEvent.class) //Comment this line to run testTransactionLock() test
     public void initiateConsumer() {
 
         //Create amount of tokens, generated every second, based on a configuration parameter.
@@ -100,6 +102,8 @@ public class MicroThrottlerClient {
         }
     }
 
+
+
     /* In order to throttle the load on the database for a consistent performance, there are 2 algorithms that suit the purpose - Leaky Bucket and Token Bucket.
      * - Leaky bucket relies on the concept that inbound rate elements is not limited and processed with a fixed frequency. If the volume of inbound elements is too large,
      * subsequent requests are discarded (bucket is full). Such algorithm is implemented in the initiator Microservice in order to prevent abuse, DDoS, etc.
@@ -114,6 +118,7 @@ public class MicroThrottlerClient {
     public void processElement(RateLimiter rateLimiter, PaymentRequest paymentRequest){
         rateLimiter.acquire();
         log.info("Processing paymentRequest: " + paymentRequest.toString() + " at: " + new Date());
+        PaymentRequest paymentSaved =  paymentDataService.savePayment(paymentRequest);
     }
 
 

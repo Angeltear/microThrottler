@@ -1,8 +1,7 @@
-package com.angeltear.microthrottler.Config;
+package com.angeltear.microthrottler.config;
 
 
 import io.lettuce.core.RedisClient;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

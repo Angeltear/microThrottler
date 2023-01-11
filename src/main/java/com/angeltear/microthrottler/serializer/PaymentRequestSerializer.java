@@ -1,6 +1,6 @@
-package com.angeltear.microthrottler.Serializer;
+package com.angeltear.microthrottler.serializer;
 
-import com.angeltear.microthrottler.Model.PaymentRequest;
+import com.angeltear.microthrottler.model.PaymentRequest;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
