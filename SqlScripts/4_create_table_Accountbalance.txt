@@ -1,0 +1,9 @@
+CREATE TABLE "micro-throttler".accountbalance
+(
+    client_id bigint,
+    balance double precision,
+    PRIMARY KEY (client_id)
+);
+
+ALTER TABLE IF EXISTS "micro-throttler".accountbalance
+    OWNER to postgres;

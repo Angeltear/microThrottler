@@ -1,0 +1,16 @@
+-- Table: micro-throttler.payments
+
+-- DROP TABLE IF EXISTS "micro-throttler".payments;
+
+CREATE TABLE IF NOT EXISTS "micro-throttler".payments
+(
+    client_id bigint NOT NULL,
+    payment_id bigint NOT NULL,
+    amount float(53),
+    CONSTRAINT "payments_PK" PRIMARY KEY (payment_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS "micro-throttler".payments
+    OWNER to postgres;
